@@ -43,13 +43,8 @@
     content:''; position:fixed; inset:0; z-index:-1; pointer-events:none; opacity:.05;
     background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   }
-
   .wrap { width:100%; max-width:460px; }
-
-  .brand {
-    display:flex; flex-direction:column; align-items:center;
-    margin-bottom:28px; animation:rise .8s var(--spring) both;
-  }
+  .brand { display:flex; flex-direction:column; align-items:center; margin-bottom:28px; animation:rise .8s var(--spring) both; }
   @keyframes rise { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:none; } }
   .brand .logo {
     width:64px; height:64px; border-radius:20px; margin-bottom:14px;
@@ -61,24 +56,18 @@
   }
   .brand h1 { font-size:22px; font-weight:800; letter-spacing:-.4px; text-align:center; }
   .brand h1 span { color:var(--green); }
-  .brand p { font-size:12px; color:var(--dim); margin-top:6px; text-align:center; letter-spacing:.3px; }
-
+  .brand p { font-size:12px; color:var(--dim); margin-top:6px; text-align:center; }
   .hero {
-    background:var(--glass);
-    border:1px solid var(--stroke);
-    border-radius:24px;
-    padding:28px 22px;
+    background:var(--glass); border:1px solid var(--stroke);
+    border-radius:24px; padding:28px 22px;
     backdrop-filter:blur(30px) saturate(180%);
-    -webkit-backdrop-filter:blur(30px) saturate(180%);
     box-shadow:0 20px 60px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.12);
-    margin-bottom:14px;
-    text-align:center;
+    margin-bottom:14px; text-align:center;
     animation:rise .8s var(--spring) .1s both;
   }
   .hero h2 { font-size:26px; font-weight:800; letter-spacing:-.6px; line-height:1.2; margin-bottom:12px; }
   .hero h2 .accent { color:var(--green); }
   .hero p { font-size:13.5px; color:var(--dim); line-height:1.6; margin-bottom:22px; }
-
   .btn {
     display:flex; align-items:center; justify-content:center; gap:10px;
     width:100%; padding:16px; border-radius:16px;
@@ -92,18 +81,13 @@
   .btn:hover { transform:translateY(-2px); }
   .btn:active { transform:scale(.97); }
   .btn svg { width:18px; height:18px; stroke:currentColor; stroke-width:2.4; fill:none; stroke-linecap:round; stroke-linejoin:round; }
-
   .features { display:grid; gap:10px; margin-bottom:14px; animation:rise .8s var(--spring) .2s both; }
   .feature {
     display:flex; align-items:flex-start; gap:12px;
     padding:16px;
     background:var(--glass); border:1px solid var(--stroke);
-    border-radius:18px;
-    backdrop-filter:blur(20px);
-    -webkit-backdrop-filter:blur(20px);
-    transition:transform .35s var(--spring), border-color .3s;
+    border-radius:18px; backdrop-filter:blur(20px);
   }
-  .feature:hover { transform:translateX(4px); border-color:rgba(0,200,83,.3); }
   .feature .ico {
     width:36px; height:36px; border-radius:11px; flex-shrink:0;
     display:grid; place-items:center;
@@ -113,41 +97,23 @@
   .feature .ico svg { width:17px; height:17px; stroke:currentColor; stroke-width:2; fill:none; stroke-linecap:round; stroke-linejoin:round; }
   .feature .txt h3 { font-size:13.5px; font-weight:700; margin-bottom:3px; color:#fff; }
   .feature .txt p { font-size:12px; color:var(--dim); line-height:1.55; }
-
-  .trust {
-    display:flex; justify-content:center; flex-wrap:wrap; gap:16px;
-    margin-bottom:20px; animation:rise .8s var(--spring) .3s both;
-  }
+  .trust { display:flex; justify-content:center; flex-wrap:wrap; gap:16px; margin-bottom:20px; animation:rise .8s var(--spring) .3s both; }
   .trust-item { display:flex; align-items:center; gap:6px; font-size:11px; color:var(--dim); font-weight:500; }
-  .trust-item svg { width:13px; height:13px; stroke:var(--green); stroke-width:2.4; fill:none; stroke-linecap:round; stroke-linejoin:round; }
-
+  .trust-item svg { width:13px; height:13px; stroke:var(--green); stroke-width:2.4; fill:none; }
   .have-key { text-align:center; padding:16px; animation:rise .8s var(--spring) .4s both; }
-  .have-key a {
-    color:var(--dim); font-size:12.5px;
-    text-decoration:underline; text-decoration-color:rgba(255,255,255,.15);
-    transition:color .2s;
-  }
+  .have-key a { color:var(--dim); font-size:12.5px; text-decoration:underline; text-decoration-color:rgba(255,255,255,.15); }
   .have-key a:hover { color:var(--bright); }
-
-  .foot {
-    text-align:center; font-size:10.5px; color:var(--faint);
-    margin-top:24px; line-height:1.7;
-    animation:rise .8s var(--spring) .5s both;
-  }
+  .foot { text-align:center; font-size:10.5px; color:var(--faint); margin-top:24px; line-height:1.7; animation:rise .8s var(--spring) .5s both; }
 </style>
 </head>
 <body>
-
 <div class="bg"></div>
-
 <div class="wrap">
-
   <div class="brand">
     <div class="logo">FF</div>
     <h1>FEARLESS <span>FFH4X</span></h1>
     <p>Access Portal</p>
   </div>
-
   <div class="hero">
     <h2>Access, <span class="accent">unlocked.</span></h2>
     <p>Get your secure access key in a few quick steps. Keys are private, device-bound, and expire automatically.</p>
@@ -156,7 +122,6 @@
       Get your key
     </a>
   </div>
-
   <div class="features">
     <div class="feature">
       <div class="ico"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg></div>
@@ -171,23 +136,13 @@
       <div class="txt"><h3>Device-bound</h3><p>Your key is checked against the device using it.</p></div>
     </div>
   </div>
-
   <div class="trust">
     <div class="trust-item"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Secure verification</div>
     <div class="trust-item"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Automatic expiry</div>
     <div class="trust-item"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Device-bound</div>
   </div>
-
-  <div class="have-key">
-    <a href="activate.html">Already have a key? Activate it →</a>
-  </div>
-
-  <div class="foot">
-    <b style="color:var(--green);">Fearless FFH4X</b> © 2026<br>
-    Keys are private · Do not share them
-  </div>
-
+  <div class="have-key"><a href="activate.html">Already have a key? Activate it →</a></div>
+  <div class="foot"><b style="color:var(--green);">Fearless FFH4X</b> © 2026<br>Keys are private · Do not share them</div>
 </div>
-
 </body>
 </html>
