@@ -101,6 +101,12 @@
   .unlocked .icon svg { width:30px; height:30px; stroke:var(--bright); stroke-width:3; fill:none; stroke-linecap:round; stroke-linejoin:round; }
   .unlocked h2 { font-size:20px; font-weight:800; margin-bottom:8px; }
   .unlocked p { font-size:13px; color:var(--dim); line-height:1.6; margin-bottom:20px; }
+  .unlocked .timer {
+    font-family:'JetBrains Mono', monospace;
+    font-size:22px; font-weight:700; color:var(--bright);
+    margin: 8px 0 20px;
+    letter-spacing:1px;
+  }
   .unlocked a {
     display:inline-block; padding:13px 24px; border-radius:12px;
     background:linear-gradient(135deg, #00e05e, #00c853);
@@ -134,7 +140,7 @@
   <div class="card">
     <div id="mainView">
       <h1>Activate your <span>key</span></h1>
-      <p class="sub">Paste your FEARLESS-FFH4X key below. Your key is bound to this device.</p>
+      <p class="sub">Paste your FEARLESS-FFH4X key below. Activation starts the 5-hour clock and binds this device.</p>
 
       <div class="input-row">
         <label>Access Key</label>
@@ -154,7 +160,8 @@
         <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
       </div>
       <h2>Access unlocked</h2>
-      <p id="unlockMsg">Your key is valid. Full access is now active on this device.</p>
+      <p id="unlockMsg">Your key is valid. Access is now active on this device.</p>
+      <div class="timer" id="timer">--:--:--</div>
       <a id="enterBtn" href="#">Enter</a>
     </div>
   </div>
@@ -176,11 +183,12 @@
     tt = setTimeout(()=>toast.classList.remove('show'), 2000);
   }
 
-  // ─── SUPABASE — filled in ───
+  // ─── SUPABASE ───
   const SUPABASE_URL = 'https://nvrjvcwhyeeloblaozuh.supabase.co';
   const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im52cmp2Y3doeWVlbGVibGFvenVoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTIwODk5NzUsImV4cCI6MjEwNzY2NTk3NX0.MgH5AP8Vqr0ZAA8GgdsIRMsrRVOg3hTF_C9bsT8rDAw';
-
   const SB = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  const FIVE_HOURS_MS = 5 * 60 * 60 * 1000;
 
   function fingerprint(){
     const src = [
@@ -195,6 +203,28 @@
   }
   const DEVICE = fingerprint();
 
+  let timerInterval = null;
+
+  function startCountdown(expiresAt){
+    if (timerInterval) clearInterval(timerInterval);
+    const target = new Date(expiresAt).getTime();
+    const el = $('timer');
+    function tick(){
+      const left = Math.max(0, target - Date.now());
+      if (left <= 0){
+        el.textContent = 'EXPIRED';
+        clearInterval(timerInterval);
+        return;
+      }
+      const hh = Math.floor(left / 3600000);
+      const mm = Math.floor((left % 3600000) / 60000);
+      const ss = Math.floor((left % 60000) / 1000);
+      el.textContent = String(hh).padStart(2,'0') + ':' + String(mm).padStart(2,'0') + ':' + String(ss).padStart(2,'0');
+    }
+    tick();
+    timerInterval = setInterval(tick, 1000);
+  }
+
   $('activateBtn').addEventListener('click', async ()=>{
     const key = $('keyInput').value.trim().toUpperCase();
     const result = $('result');
@@ -208,46 +238,59 @@
     $('activateBtn').disabled = true;
     $('activateBtn').textContent = 'Checking…';
 
+    function resetBtn(){
+      $('activateBtn').disabled = false;
+      $('activateBtn').innerHTML = '<svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> Activate';
+    }
+
     try {
       const { data, error } = await SB.from('keys')
-        .select('*')
-        .eq('key', key)
-        .limit(1);
+        .select('*').eq('key', key).limit(1);
 
       if (error || !data || !data.length){
         result.className = 'result error';
         result.innerHTML = '<h3>Invalid key</h3><p>This key was not found. Check the spelling and try again.</p>';
-        $('activateBtn').disabled = false;
-        $('activateBtn').innerHTML = '<svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> Activate';
+        resetBtn();
         return;
       }
 
       const rec = data[0];
 
-      // expired?
+      // already expired?
       if (rec.expires_at && new Date(rec.expires_at) < new Date()){
         result.className = 'result error';
         result.innerHTML = '<h3>Key expired</h3><p>This key is no longer valid. Get a new one from the portal.</p>';
-        $('activateBtn').disabled = false;
-        $('activateBtn').innerHTML = '<svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> Activate';
+        resetBtn();
         return;
       }
 
-      // device-bound to a different device?
+      // bound to a different device?
       if (rec.device_id && rec.device_id !== DEVICE){
         result.className = 'result error';
         result.innerHTML = '<h3>Key already used</h3><p>This key is bound to a different device. Each key works on one device only.</p>';
-        $('activateBtn').disabled = false;
-        $('activateBtn').innerHTML = '<svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> Activate';
+        resetBtn();
         return;
       }
 
-      // bind device if unbound
-      if (!rec.device_id){
-        try {
-          await SB.from('keys').update({ device_id: DEVICE, used: true }).eq('key', key);
-        } catch {}
+      // ─── figure out expiry ───
+      let finalExpiresAt = rec.expires_at;
+
+      if (rec.expires_from === 'activation' && !rec.expires_at){
+        // public 5-hour key — clock starts NOW
+        finalExpiresAt = new Date(Date.now() + FIVE_HOURS_MS).toISOString();
+      } else if (rec.expires_from === 'activation' && rec.expires_at){
+        // shouldn't normally happen but keep whatever's there
+        finalExpiresAt = rec.expires_at;
       }
+      // expires_from === 'generation' → expires_at was already set on insert, use it
+
+      // update: bind device + (if needed) set expiry
+      const updatePayload = { device_id: DEVICE, used: true };
+      if (finalExpiresAt) updatePayload.expires_at = finalExpiresAt;
+
+      try {
+        await SB.from('keys').update(updatePayload).eq('key', key);
+      } catch {}
 
       // log activation
       try {
@@ -258,16 +301,21 @@
       try {
         localStorage.setItem('ffh4x_unlocked', '1');
         localStorage.setItem('ffh4x_key', key);
+        if (finalExpiresAt) localStorage.setItem('ffh4x_expires', finalExpiresAt);
       } catch {}
 
-      // success
+      // success view
       $('mainView').style.display = 'none';
       $('unlocked').classList.add('show');
 
-      const exp = rec.expires_at ? new Date(rec.expires_at) : null;
-      if (exp){
-        const days = Math.max(0, Math.ceil((exp - Date.now()) / 86400000));
-        $('unlockMsg').textContent = 'Your key is valid. Access active for ' + days + ' more days on this device.';
+      if (finalExpiresAt){
+        const d = new Date(finalExpiresAt);
+        const hours = Math.max(0, ((d - Date.now()) / 3600000)).toFixed(1);
+        $('unlockMsg').textContent = 'Your key is valid. Access active for ~' + hours + ' hours on this device.';
+        startCountdown(finalExpiresAt);
+      } else {
+        $('unlockMsg').textContent = 'Your key is valid. Access is now active on this device.';
+        $('timer').textContent = '∞';
       }
 
       if (navigator.vibrate) navigator.vibrate([40, 30, 40]);
@@ -275,18 +323,34 @@
     } catch (e){
       result.className = 'result error';
       result.innerHTML = '<h3>Connection error</h3><p>' + (e.message || 'Could not reach the server.') + '</p>';
-      $('activateBtn').disabled = false;
-      $('activateBtn').innerHTML = '<svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> Activate';
+      resetBtn();
     }
   });
 
-  // pre-fill if this device already got a key
+  // prefill from localStorage if this device has a key saved
   try {
     const stored = localStorage.getItem('ffh4x_key');
     if (stored) $('keyInput').value = stored;
   } catch {}
 
-  // enter key with the enter button
+  // auto-activate if we already know this device has a live key
+  (async ()=>{
+    try {
+      const { data } = await SB.from('keys')
+        .select('*').eq('device_id', DEVICE)
+        .gt('expires_at', new Date().toISOString())
+        .order('created_at', { ascending: false }).limit(1);
+      if (data && data.length){
+        $('mainView').style.display = 'none';
+        $('unlocked').classList.add('show');
+        const exp = data[0].expires_at;
+        $('unlockMsg').textContent = 'Access is active on this device.';
+        startCountdown(exp);
+      }
+    } catch {}
+  })();
+
+  // enter key with Enter key on keyboard
   $('keyInput').addEventListener('keydown', e=>{
     if (e.key === 'Enter') $('activateBtn').click();
   });
