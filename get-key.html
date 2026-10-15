@@ -34,32 +34,26 @@
     animation:drift 30s ease-in-out infinite;
   }
   @keyframes drift { 0%,100% { transform:translate(0,0) scale(1.05); } 50% { transform:translate(2%,3%) scale(1.12); } }
-
   .wrap { width:100%; max-width:440px; }
   .card {
     background:var(--glass); border:1px solid var(--stroke);
     border-radius:24px; padding:28px 22px;
     backdrop-filter:blur(30px) saturate(180%);
-    -webkit-backdrop-filter:blur(30px) saturate(180%);
     box-shadow:0 20px 60px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.12);
     animation:rise .7s var(--spring) both;
   }
   @keyframes rise { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:none; } }
-
   .step { display:none; }
   .step.active { display:block; animation:stepIn .5s var(--spring); }
   @keyframes stepIn { from { opacity:0; transform:translateX(20px); } to { opacity:1; transform:none; } }
-
   h1 { font-size:22px; font-weight:800; letter-spacing:-.4px; margin-bottom:8px; text-align:center; }
   h1 span { color:var(--green); }
   .sub { font-size:13px; color:var(--dim); line-height:1.6; text-align:center; margin-bottom:22px; }
-
   .channels { display:grid; gap:8px; margin-bottom:16px; }
   .channel {
     display:flex; align-items:center; gap:12px;
     padding:13px 15px;
-    background:rgba(255,255,255,.04);
-    border:1px solid var(--stroke);
+    background:rgba(255,255,255,.04); border:1px solid var(--stroke);
     border-radius:12px;
     text-decoration:none; color:var(--text);
     font-size:13px; font-weight:600;
@@ -82,7 +76,6 @@
   .channel .check svg { width:12px; height:12px; stroke:#04120a; stroke-width:3.5; fill:none; opacity:0; transition:all .3s .1s; }
   .channel.done .check { background:var(--bright); border-color:var(--bright); }
   .channel.done .check svg { opacity:1; }
-
   .key-display {
     background:linear-gradient(135deg, rgba(0,200,83,.15), rgba(0,200,83,.05));
     border:1px solid rgba(0,200,83,.4);
@@ -95,25 +88,17 @@
     50% { box-shadow:0 0 30px 4px rgba(0,200,83,.3); }
   }
   .key-display .lbl { font-size:10.5px; color:var(--dim); text-transform:uppercase; letter-spacing:1.4px; margin-bottom:10px; font-weight:600; }
-  .key-display .key {
-    font-family:'JetBrains Mono', monospace;
-    font-size:18px; font-weight:700; color:#fff;
-    word-break:break-all; line-height:1.4;
-    -webkit-user-select:all; user-select:all;
-  }
+  .key-display .key { font-family:'JetBrains Mono', monospace; font-size:18px; font-weight:700; color:#fff; word-break:break-all; line-height:1.4; -webkit-user-select:all; user-select:all; }
   .key-display .expires { font-size:11px; color:var(--faint); margin-top:10px; font-family:'JetBrains Mono', monospace; }
-
   .note {
     font-size:11px; color:var(--dim);
     padding:12px 14px;
     background:rgba(255,176,32,.06);
     border:1px solid rgba(255,176,32,.2);
     border-radius:11px;
-    line-height:1.6;
-    margin-bottom:16px;
+    line-height:1.6; margin-bottom:16px;
   }
   .note b { color:#ffb020; }
-
   .btn {
     display:flex; align-items:center; justify-content:center; gap:10px;
     width:100%; padding:15px; border-radius:14px;
@@ -128,22 +113,10 @@
   .btn:active { transform:scale(.97); }
   .btn:disabled { opacity:.5; cursor:not-allowed; transform:none; }
   .btn svg { width:16px; height:16px; stroke:currentColor; stroke-width:2.4; fill:none; stroke-linecap:round; stroke-linejoin:round; }
-  .btn.ghost {
-    background:rgba(255,255,255,.06); color:#ccc;
-    border:1px solid var(--stroke); box-shadow:none;
-    margin-top:10px;
-  }
+  .btn.ghost { background:rgba(255,255,255,.06); color:#ccc; border:1px solid var(--stroke); box-shadow:none; margin-top:10px; }
   .btn.ghost:hover { color:var(--bright); border-color:rgba(0,200,83,.35); }
-
-  .spinner {
-    width:36px; height:36px; border-radius:50%;
-    border:3px solid rgba(255,255,255,.1);
-    border-top-color:var(--green);
-    animation:spin .8s linear infinite;
-    margin:20px auto;
-  }
+  .spinner { width:36px; height:36px; border-radius:50%; border:3px solid rgba(255,255,255,.1); border-top-color:var(--green); animation:spin .8s linear infinite; margin:20px auto; }
   @keyframes spin { to { transform:rotate(360deg); } }
-
   .toast {
     position:fixed; bottom:24px; left:50%;
     transform:translateX(-50%) translateY(80px);
@@ -153,23 +126,19 @@
     border:1px solid rgba(0,200,83,.3);
     z-index:999; opacity:0;
     transition:all .35s var(--spring);
-    pointer-events:none;
+    pointer-events:none; max-width:80vw; text-align:center;
   }
   .toast.show { transform:translateX(-50%) translateY(0); opacity:1; }
   .toast.error { color:var(--red); border-color:rgba(255,64,64,.35); }
 </style>
 </head>
 <body>
-
 <div class="bg"></div>
-
 <div class="wrap">
   <div class="card">
-
     <div class="step active" id="step1">
       <h1>Verify to <span>continue</span></h1>
       <p class="sub">Open all three channels below. Your key unlocks the moment every one is opened.</p>
-
       <div class="channels">
         <a class="channel" data-ch="yt" href="https://www.youtube.com/@fearlessxitt" target="_blank" rel="noopener">
           <div class="ic"><svg viewBox="0 0 24 24"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z"/><polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02" fill="currentColor" stroke="none"/></svg></div>
@@ -187,33 +156,27 @@
           <span class="check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
         </a>
       </div>
-
       <button class="btn" id="claimBtn" disabled>
         <svg viewBox="0 0 24 24"><path d="M15 7a5 5 0 1 0 0 10 5 5 0 0 0 0-10z"/><path d="M15 12h9"/></svg>
         <span id="claimText">Open all 3 to unlock</span>
       </button>
     </div>
-
     <div class="step" id="step2">
       <h1>Issuing your <span>key</span></h1>
       <p class="sub">This takes a few seconds. Don't close the page.</p>
       <div class="spinner"></div>
     </div>
-
     <div class="step" id="step3">
       <h1>Your <span>key</span></h1>
       <p class="sub">Save this key. It's device-bound and starts its 5-hour clock the moment you activate.</p>
-
       <div class="key-display">
         <div class="lbl">Access Key</div>
         <div class="key" id="keyValue">FEARLESS-FFH4X-XXXX-XXXX</div>
         <div class="expires" id="keyExpiry">5 hours after activation</div>
       </div>
-
       <div class="note">
         <b>Copy this now.</b> Your key is bound to this device and lives for 5 hours once you activate it. If you lose it, you'll need to verify again.
       </div>
-
       <button class="btn" id="copyBtn">
         <svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
         Copy key
@@ -223,12 +186,9 @@
         Use this key now
       </a>
     </div>
-
   </div>
 </div>
-
 <div class="toast" id="toast"></div>
-
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 (function(){
@@ -240,15 +200,13 @@
     toast.classList.toggle('error', !!err);
     toast.classList.add('show');
     clearTimeout(tt);
-    tt = setTimeout(()=>toast.classList.remove('show'), 2000);
+    tt = setTimeout(()=>toast.classList.remove('show'), 2400);
   }
 
-  // ─── SUPABASE ───
   const SUPABASE_URL = 'https://nvrjvcwhyeeloblaozuh.supabase.co';
   const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im52cmp2Y3doeWVlbGVibGFvenVoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTIwODk5NzUsImV4cCI6MjEwNzY2NTk3NX0.MgH5AP8Vqr0ZAA8GgdsIRMsrRVOg3hTF_C9bsT8rDAw';
   const SB = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-  // Device fingerprint — same algorithm as activate.html
   function fingerprint(){
     const src = [
       navigator.userAgent, navigator.language,
@@ -285,57 +243,52 @@
     $('step1').classList.remove('active');
     $('step2').classList.add('active');
 
-    // 1) check if this device has a live key (activated + not expired)
+    // existing live key on this device?
     let activeKey = null;
     try {
-      const { data } = await SB.from('keys')
-        .select('*')
+      const { data } = await SB.from('keys').select('*')
         .eq('device_id', DEVICE)
         .gt('expires_at', new Date().toISOString())
-        .order('created_at', { ascending: false })
-        .limit(1);
+        .order('created_at', { ascending: false }).limit(1);
       if (data && data.length) activeKey = data[0];
-    } catch (e) {}
+    } catch (e){}
 
     if (activeKey){
-      showKey(activeKey.key, 'already active — ' + new Date(activeKey.expires_at).toLocaleString());
+      showKey(activeKey.key, 'already active — ends ' + new Date(activeKey.expires_at).toLocaleString());
       return;
     }
 
-    // 2) check if this device has an UNACTIVATED public key waiting (expires_at null, expires_from='activation', note='public')
+    // pending unactivated public claim?
     let pendingKey = null;
     try {
-      const { data } = await SB.from('keys')
-        .select('*')
+      const { data } = await SB.from('keys').select('*')
         .eq('device_id', DEVICE)
         .is('expires_at', null)
         .eq('expires_from', 'activation')
         .eq('note', 'public-claim')
-        .order('created_at', { ascending: false })
-        .limit(1);
+        .order('created_at', { ascending: false }).limit(1);
       if (data && data.length) pendingKey = data[0];
-    } catch (e) {}
+    } catch (e){}
 
     if (pendingKey){
       showKey(pendingKey.key, 'waiting for activation · 5 hours once activated');
       return;
     }
 
-    // 3) fresh claim — create a new key, no expiry yet
     const key = makeKey();
-
     try {
-      await SB.from('keys').insert({
-        key,
-        product: 'vip',
-        device_id: DEVICE,
-        used: false,
-        expires_at: null,
-        expires_from: 'activation',
-        note: 'public-claim'
+      const { error } = await SB.from('keys').insert({
+        key, product:'vip', device_id: DEVICE, used: false,
+        expires_at: null, expires_from: 'activation', note: 'public-claim'
       });
+      if (error){
+        say('DB error: ' + error.message, true);
+        $('step2').classList.remove('active');
+        $('step1').classList.add('active');
+        return;
+      }
     } catch (e){
-      say('Could not create key', true);
+      say('Network error: ' + (e.message || 'unknown'), true);
       $('step2').classList.remove('active');
       $('step1').classList.add('active');
       return;
@@ -349,21 +302,14 @@
     $('step3').classList.add('active');
     $('keyValue').textContent = k;
     $('keyExpiry').textContent = expText;
-    try {
-      localStorage.setItem('ffh4x_key', k);
-    } catch {}
+    try { localStorage.setItem('ffh4x_key', k); } catch {}
   }
 
   $('copyBtn').addEventListener('click', async ()=>{
-    try {
-      await navigator.clipboard.writeText($('keyValue').textContent);
-      say('Key copied');
-    } catch {
-      say('Copy failed — long press to select', true);
-    }
+    try { await navigator.clipboard.writeText($('keyValue').textContent); say('Key copied'); }
+    catch { say('Copy failed — long press to select', true); }
   });
 })();
 </script>
-
 </body>
 </html>
