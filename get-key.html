@@ -202,16 +202,16 @@
 
     <div class="step" id="step3">
       <h1>Your <span>key</span></h1>
-      <p class="sub">Save this key. It's device-bound to this browser and expires automatically.</p>
+      <p class="sub">Save this key. It's device-bound and starts its 5-hour clock the moment you activate.</p>
 
       <div class="key-display">
         <div class="lbl">Access Key</div>
         <div class="key" id="keyValue">FEARLESS-FFH4X-XXXX-XXXX</div>
-        <div class="expires" id="keyExpiry">—</div>
+        <div class="expires" id="keyExpiry">5 hours after activation</div>
       </div>
 
       <div class="note">
-        <b>Copy this now.</b> Your key is bound to this device. Screenshot it or write it down. If you lose it, you'll need to verify again.
+        <b>Copy this now.</b> Your key is bound to this device and lives for 5 hours once you activate it. If you lose it, you'll need to verify again.
       </div>
 
       <button class="btn" id="copyBtn">
@@ -243,12 +243,12 @@
     tt = setTimeout(()=>toast.classList.remove('show'), 2000);
   }
 
-  // ─── SUPABASE — filled in ───
+  // ─── SUPABASE ───
   const SUPABASE_URL = 'https://nvrjvcwhyeeloblaozuh.supabase.co';
   const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im52cmp2Y3doeWVlbGVibGFvenVoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTIwODk5NzUsImV4cCI6MjEwNzY2NTk3NX0.MgH5AP8Vqr0ZAA8GgdsIRMsrRVOg3hTF_C9bsT8rDAw';
-
   const SB = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+  // Device fingerprint — same algorithm as activate.html
   function fingerprint(){
     const src = [
       navigator.userAgent, navigator.language,
@@ -285,8 +285,8 @@
     $('step1').classList.remove('active');
     $('step2').classList.add('active');
 
-    // Check if this device already has a live key
-    let existing = null;
+    // 1) check if this device has a live key (activated + not expired)
+    let activeKey = null;
     try {
       const { data } = await SB.from('keys')
         .select('*')
@@ -294,51 +294,69 @@
         .gt('expires_at', new Date().toISOString())
         .order('created_at', { ascending: false })
         .limit(1);
-      if (data && data.length) existing = data[0];
-    } catch (e){ /* ignore */ }
+      if (data && data.length) activeKey = data[0];
+    } catch (e) {}
 
-    if (existing){
-      showKey(existing.key, existing.expires_at);
+    if (activeKey){
+      showKey(activeKey.key, 'already active — ' + new Date(activeKey.expires_at).toLocaleString());
       return;
     }
 
-    // Issue new key
+    // 2) check if this device has an UNACTIVATED public key waiting (expires_at null, expires_from='activation', note='public')
+    let pendingKey = null;
+    try {
+      const { data } = await SB.from('keys')
+        .select('*')
+        .eq('device_id', DEVICE)
+        .is('expires_at', null)
+        .eq('expires_from', 'activation')
+        .eq('note', 'public-claim')
+        .order('created_at', { ascending: false })
+        .limit(1);
+      if (data && data.length) pendingKey = data[0];
+    } catch (e) {}
+
+    if (pendingKey){
+      showKey(pendingKey.key, 'waiting for activation · 5 hours once activated');
+      return;
+    }
+
+    // 3) fresh claim — create a new key, no expiry yet
     const key = makeKey();
-    const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
 
     try {
       await SB.from('keys').insert({
         key,
         product: 'vip',
         device_id: DEVICE,
-        used: true,
-        expires_at: expiresAt,
-        note: 'auto-issued via portal'
+        used: false,
+        expires_at: null,
+        expires_from: 'activation',
+        note: 'public-claim'
       });
-    } catch (e){ /* continue anyway */ }
+    } catch (e){
+      say('Could not create key', true);
+      $('step2').classList.remove('active');
+      $('step1').classList.add('active');
+      return;
+    }
 
-    setTimeout(()=> showKey(key, expiresAt), 1200);
+    setTimeout(()=> showKey(key, '5 hours after activation'), 1200);
   });
 
-  function showKey(k, exp){
+  function showKey(k, expText){
     $('step2').classList.remove('active');
     $('step3').classList.add('active');
     $('keyValue').textContent = k;
-
-    const d = new Date(exp);
-    const days = Math.max(0, Math.ceil((d - Date.now()) / 86400000));
-    $('keyExpiry').textContent = 'Expires in ' + days + ' days · ' + d.toLocaleDateString();
-
+    $('keyExpiry').textContent = expText;
     try {
       localStorage.setItem('ffh4x_key', k);
-      localStorage.setItem('ffh4x_key_exp', exp);
     } catch {}
   }
 
   $('copyBtn').addEventListener('click', async ()=>{
-    const k = $('keyValue').textContent;
     try {
-      await navigator.clipboard.writeText(k);
+      await navigator.clipboard.writeText($('keyValue').textContent);
       say('Key copied');
     } catch {
       say('Copy failed — long press to select', true);
