@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0a0a0c">
+<title>Activate · Fearless FFH4X</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green:#00c853; --bright:#00e05e; --red:#ff4040;
+    --bg:#0a0a0c; --text:#f5f5f7;
+    --dim:#8a8a8a; --faint:#565656;
+    --glass:rgba(255,255,255,.06);
+    --stroke:rgba(255,255,255,.1);
+    --spring:cubic-bezier(.34,1.56,.64,1);
+  }
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  html, body { background:#0a0a0c; }
+  body {
+    font-family:-apple-system, 'SF Pro Display', 'Sora', sans-serif;
+    color:var(--text); min-height:100dvh;
+    padding:24px 16px 60px;
+    display:flex; justify-content:center; align-items:center;
+    -webkit-font-smoothing:antialiased;
+    position:relative; overflow-x:hidden;
+  }
+  .bg { position:fixed; inset:-10%; z-index:-2; filter:blur(60px) saturate(150%);
+    background:
+      radial-gradient(50% 40% at 25% 25%, #8b5cf6 0%, transparent 70%),
+      radial-gradient(45% 35% at 80% 30%, #22d3ee 0%, transparent 65%),
+      radial-gradient(55% 50% at 30% 85%, #10b981 0%, transparent 70%);
+    animation:drift 30s ease-in-out infinite;
+  }
+  @keyframes drift { 0%,100% { transform:translate(0,0) scale(1.05); } 50% { transform:translate(2%,3%) scale(1.12); } }
+  .wrap { width:100%; max-width:440px; }
+  .card {
+    background:var(--glass); border:1px solid var(--stroke);
+    border-radius:24px; padding:28px 22px;
+    backdrop-filter:blur(30px) saturate(180%);
+    -webkit-backdrop-filter:blur(30px) saturate(180%);
+    box-shadow:0 20px 60px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.12);
+    animation:rise .7s var(--spring) both;
+  }
+  @keyframes rise { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:none; } }
+
+  h1 { font-size:22px; font-weight:800; letter-spacing:-.4px; margin-bottom:8px; text-align:center; }
+  h1 span { color:var(--green); }
+  .sub { font-size:13px; color:var(--dim); line-height:1.6; text-align:center; margin-bottom:22px; }
+
+  .input-row { margin-bottom:14px; }
+  label { display:block; font-size:11px; color:var(--dim); text-transform:uppercase; letter-spacing:1.2px; margin-bottom:8px; font-weight:600; }
+  input {
+    width:100%; padding:15px 16px;
+    background:rgba(0,0,0,.35);
+    border:1px solid var(--stroke);
+    border-radius:14px;
+    color:#fff; font-family:'JetBrains Mono', monospace;
+    font-size:14px; letter-spacing:.5px;
+    transition:all .3s;
+    -webkit-user-select:text; user-select:text;
+  }
+  input::placeholder { color:var(--faint); letter-spacing:.5px; }
+  input:focus { outline:none; border-color:rgba(0,200,83,.5); box-shadow:0 0 0 4px rgba(0,200,83,.12); }
+
+  .btn {
+    display:flex; align-items:center; justify-content:center; gap:10px;
+    width:100%; padding:16px; border-radius:16px;
+    background:linear-gradient(135deg, #00e05e, #00c853);
+    color:#04120a; border:none;
+    font-family:inherit; font-size:15px; font-weight:700;
+    cursor:pointer; transition:all .35s var(--spring);
+    box-shadow:0 10px 30px rgba(0,224,94,.4), inset 0 1px 0 rgba(255,255,255,.4);
+  }
+  .btn:hover { transform:translateY(-2px); }
+  .btn:active { transform:scale(.97); }
+  .btn:disabled { opacity:.5; cursor:not-allowed; transform:none; }
+  .btn svg { width:16px; height:16px; stroke:currentColor; stroke-width:2.4; fill:none; stroke-linecap:round; stroke-linejoin:round; }
+
+  .result {
+    display:none; padding:16px; border-radius:14px;
+    margin-top:14px; font-size:13px; line-height:1.6;
+    animation:stepIn .5s var(--spring);
+  }
+  @keyframes stepIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:none; } }
+  .result.success { display:block; background:rgba(0,200,83,.1); border:1px solid rgba(0,200,83,.35); color:#d4f7e0; }
+  .result.error { display:block; background:rgba(255,64,64,.08); border:1px solid rgba(255,64,64,.3); color:#ffb8b8; }
+  .result h3 { font-size:14px; margin-bottom:6px; color:#fff; }
+  .result p { font-size:12.5px; color:inherit; }
+
+  .unlocked { display:none; text-align:center; padding:20px 0; }
+  .unlocked.show { display:block; animation:stepIn .7s var(--spring); }
+  .unlocked .icon {
+    width:64px; height:64px; border-radius:50%; margin:0 auto 16px;
+    background:linear-gradient(135deg, rgba(0,200,83,.2), rgba(0,200,83,.08));
+    border:2px solid rgba(0,200,83,.5);
+    display:grid; place-items:center;
+    box-shadow:0 0 40px rgba(0,200,83,.3);
+  }
+  .unlocked .icon svg { width:30px; height:30px; stroke:var(--bright); stroke-width:3; fill:none; stroke-linecap:round; stroke-linejoin:round; }
+  .unlocked h2 { font-size:20px; font-weight:800; margin-bottom:8px; }
+  .unlocked p { font-size:13px; color:var(--dim); line-height:1.6; margin-bottom:20px; }
+  .unlocked a {
+    display:inline-block; padding:13px 24px; border-radius:12px;
+    background:linear-gradient(135deg, #00e05e, #00c853);
+    color:#04120a; text-decoration:none;
+    font-weight:700; font-size:14px;
+    transition:all .3s var(--spring);
+    box-shadow:0 8px 24px rgba(0,224,94,.4);
+  }
+  .unlocked a:hover { transform:translateY(-2px); }
+
+  .toast {
+    position:fixed; bottom:24px; left:50%;
+    transform:translateX(-50%) translateY(80px);
+    background:#141414; color:var(--bright);
+    padding:11px 22px; border-radius:30px;
+    font-size:12.5px; font-weight:600;
+    border:1px solid rgba(0,200,83,.3);
+    z-index:999; opacity:0;
+    transition:all .35s var(--spring);
+    pointer-events:none;
+  }
+  .toast.show { transform:translateX(-50%) translateY(0); opacity:1; }
+  .toast.error { color:var(--red); border-color:rgba(255,64,64,.35); }
+</style>
+</head>
+<body>
+
+<div class="bg"></div>
+
+<div class="wrap">
+  <div class="card">
+    <div id="mainView">
+      <h1>Activate your <span>key</span></h1>
+      <p class="sub">Paste your FEARLESS-FFH4X key below. Your key is bound to this device.</p>
+
+      <div class="input-row">
+        <label>Access Key</label>
+        <input type="text" id="keyInput" placeholder="FEARLESS-FFH4X-XXXX-XXXX" autocomplete="off" spellcheck="false">
+      </div>
+
+      <button class="btn" id="activateBtn">
+        <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        Activate
+      </button>
+
+      <div class="result" id="result"></div>
+    </div>
+
+    <div class="unlocked" id="unlocked">
+      <div class="icon">
+        <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <h2>Access unlocked</h2>
+      <p id="unlockMsg">Your key is valid. Full access is now active on this device.</p>
+      <a id="enterBtn" href="#">Enter</a>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+(function(){
+  const $ = id => document.getElementById(id);
+  const toast = $('toast');
+  let tt;
+  function say(msg, err){
+    toast.textContent = msg;
+    toast.classList.toggle('error', !!err);
+    toast.classList.add('show');
+    clearTimeout(tt);
+    tt = setTimeout(()=>toast.classList.remove('show'), 2000);
+  }
+
+  // ─── SUPABASE — filled in ───
+  const SUPABASE_URL = 'https://nvrjvcwhyeeloblaozuh.supabase.co';
+  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im52cmp2Y3doeWVlbGVibGFvenVoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTIwODk5NzUsImV4cCI6MjEwNzY2NTk3NX0.MgH5AP8Vqr0ZAA8GgdsIRMsrRVOg3hTF_C9bsT8rDAw';
+
+  const SB = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  function fingerprint(){
+    const src = [
+      navigator.userAgent, navigator.language,
+      screen.width + 'x' + screen.height,
+      new Date().getTimezoneOffset(),
+      navigator.hardwareConcurrency || 0
+    ].join('|');
+    let h = 0;
+    for (let i = 0; i < src.length; i++){ h = ((h << 5) - h) + src.charCodeAt(i); h |= 0; }
+    return 'fe-ffh4x-' + Math.abs(h).toString(16);
+  }
+  const DEVICE = fingerprint();
+
+  $('activateBtn').addEventListener('click', async ()=>{
+    const key = $('keyInput').value.trim().toUpperCase();
+    const result = $('result');
+
+    if (!key){
+      result.className = 'result error';
+      result.innerHTML = '<h3>Enter a key</h3><p>Paste the key you received.</p>';
+      return;
+    }
+
+    $('activateBtn').disabled = true;
+    $('activateBtn').textContent = 'Checking…';
+
+    try {
+      const { data, error } = await SB.from('keys')
+        .select('*')
+        .eq('key', key)
+        .limit(1);
+
+      if (error || !data || !data.length){
+        result.className = 'result error';
+        result.innerHTML = '<h3>Invalid key</h3><p>This key was not found. Check the spelling and try again.</p>';
+        $('activateBtn').disabled = false;
+        $('activateBtn').innerHTML = '<svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> Activate';
+        return;
+      }
+
+      const rec = data[0];
+
+      // expired?
+      if (rec.expires_at && new Date(rec.expires_at) < new Date()){
+        result.className = 'result error';
+        result.innerHTML = '<h3>Key expired</h3><p>This key is no longer valid. Get a new one from the portal.</p>';
+        $('activateBtn').disabled = false;
+        $('activateBtn').innerHTML = '<svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> Activate';
+        return;
+      }
+
+      // device-bound to a different device?
+      if (rec.device_id && rec.device_id !== DEVICE){
+        result.className = 'result error';
+        result.innerHTML = '<h3>Key already used</h3><p>This key is bound to a different device. Each key works on one device only.</p>';
+        $('activateBtn').disabled = false;
+        $('activateBtn').innerHTML = '<svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> Activate';
+        return;
+      }
+
+      // bind device if unbound
+      if (!rec.device_id){
+        try {
+          await SB.from('keys').update({ device_id: DEVICE, used: true }).eq('key', key);
+        } catch {}
+      }
+
+      // log activation
+      try {
+        await SB.from('activations').insert({ key, device_id: DEVICE });
+      } catch {}
+
+      // store locally
+      try {
+        localStorage.setItem('ffh4x_unlocked', '1');
+        localStorage.setItem('ffh4x_key', key);
+      } catch {}
+
+      // success
+      $('mainView').style.display = 'none';
+      $('unlocked').classList.add('show');
+
+      const exp = rec.expires_at ? new Date(rec.expires_at) : null;
+      if (exp){
+        const days = Math.max(0, Math.ceil((exp - Date.now()) / 86400000));
+        $('unlockMsg').textContent = 'Your key is valid. Access active for ' + days + ' more days on this device.';
+      }
+
+      if (navigator.vibrate) navigator.vibrate([40, 30, 40]);
+
+    } catch (e){
+      result.className = 'result error';
+      result.innerHTML = '<h3>Connection error</h3><p>' + (e.message || 'Could not reach the server.') + '</p>';
+      $('activateBtn').disabled = false;
+      $('activateBtn').innerHTML = '<svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> Activate';
+    }
+  });
+
+  // pre-fill if this device already got a key
+  try {
+    const stored = localStorage.getItem('ffh4x_key');
+    if (stored) $('keyInput').value = stored;
+  } catch {}
+
+  // enter key with the enter button
+  $('keyInput').addEventListener('keydown', e=>{
+    if (e.key === 'Enter') $('activateBtn').click();
+  });
+})();
+</script>
+
+</body>
+</html>
